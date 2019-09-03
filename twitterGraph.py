@@ -192,39 +192,54 @@ def breadth_first_search(username):
     
     return node_colors
 
+def show_options():
+    os.system('clear')
+    print('========== MENU ==========')
+    print('1 - Do BFS from one user to all it can reach')
+    print('2 - Do BFS from one user to another')
+    print('3 - Exit')
 
-        
+def menu(G):
+    show_options()
+    op = input('\noption: ')
+
+    if op == '1':
+        usr3 = input('\nPerform Breadth First Search from user (use name without @): ')
+        node_colors = breadth_first_search(usr3)
+        title = 'Busca por Largura começando em ' + usr3
+        show_graph(G, title , node_colors)
+        menu(G)
+
+    elif op == '2':
+        print('\nFind the shortest path between two users:')
+        usr1 = input('From: ')
+        usr2 = input('To: ')
+        id1 = get_user_graph_id(usr1, G)
+        id2 = get_user_graph_id(usr2, G)
+        if(not (id1 == -1) and  not (id2 == -1)):
+            path = nx.shortest_path(G, id1, id2)
+            print('\nShortest path:')
+            for id in path:
+                print(G.nodes[id]['name'])
+
+            node_colors = ["blue" if n in path else "red" for n in G.nodes()]
+            title = 'Menor caminho entre ' + G.nodes[id1]['name'] + ' e ' + G.nodes[id2]['name']
+            show_graph(G, title , node_colors)
+        else:
+            input('Username not found. Press ENTER to return.')
+
+        menu(G)
+
+    elif op == '3':
+        exit
+
+    else:
+        input('Option not found. Press ENTER to return.')
+        menu(G)
 
 
 
 if __name__ == "__main__":
     create_barear_token()
     G = mount_graph()
-    ##########################
-    # print('Find the shortest path between two users:')
-    # usr1 = input('From: ')
-    # usr2 = input('To: ')
-    # id1 = get_user_graph_id(usr1, G)
-    # id2 = get_user_graph_id(usr2, G)
-    
-
-
-    # if(not (id1 == -1) and  not (id2 == -1)):
-    #     path = search_path(id1, id2, G)
-
-    #     print('\nO menor caminho:')
-    #     for id in path:
-    #         print(G.nodes[id]['name'])
-
-    #     node_colors = ["blue" if n in path else "red" for n in G.nodes()]
-    #     title = 'Menor caminho entre ' + G.nodes[id1]['name'] + ' e ' + G.nodes[id2]['name']
-    #     show_graph(G, title , node_colors)
-    # else:
-    #     print('username incorreto')
-    #############################
-
-
-    usr3 = input('Perform Breadth First Search from user (use name without @): ')
-    node_colors = breadth_first_search(usr3)
-    title = 'Busca por Largura começando em ' + usr3
-    show_graph(G, title , node_colors)
+    menu(G)
