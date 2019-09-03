@@ -79,3 +79,14 @@ def get_ids(user, relationship, cursor=-1):
         friends = [*friends, *get_ids(user, relationship, next_page)]
 
     return friends, rate_limit
+
+        # if(G.edges[edge_x, edge_y]['layer'] == 1):
+        #     width=2,
+        # color="red"
+        # elif(G.edges[edge_x, edge_y]['layer'] == 2):
+        #     width=1.5,
+        #     color="orange"
+        # else:
+        #     width=1, 
+        #     color='#888'
+        # ),
