@@ -68,24 +68,29 @@ def create_graph(vec, user):
     title = 'Grafo de quem ' + user + ' segue no Twitter'
     return show_graph(G, title)
 
-def show_graph(G, text, colors = []):
+def show_graph(G, text, colors = [], path = []):
 
     pos = nx.fruchterman_reingold_layout(G)
 
     edge_x = []
     edge_y = []
     for e in G.edges():
-        edge_x.extend([pos[e[0]][0], pos[e[1]][0], None])
-        edge_y.extend([pos[e[0]][1], pos[e[1]][1], None])
+        if e[0] not in path and e[1] not in path:
+            edge_x.extend([pos[e[0]][0], pos[e[1]][0], None])
+            edge_y.extend([pos[e[0]][1], pos[e[1]][1], None])
 
-    # width=1 
-    # color='#888'
-    # if(G.edges[edge_x, edge_y]['layer'] == 1):
-    #     width=2
-    #     color="red"
-    # elif(G.edges[edge_x, edge_y]['layer'] == 2):
-    #     width=1.5,
-    #     color="orange"
+    p_edge_x = []
+    p_edge_y = []
+    for i in range(0,len(path) - 1):
+        edge = (path[i],path[i+1])
+        p_edge_x.extend([pos[edge[0]][0], pos[edge[1]][0], None])
+        p_edge_y.extend([pos[edge[0]][1], pos[edge[1]][1], None])
+
+    edge_trace1 = go.Scatter(
+            x=p_edge_x, y=p_edge_y,
+            line=dict(width=1, color='#0F0'),
+            hoverinfo='none',
+            mode='lines')
 
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
@@ -102,10 +107,6 @@ def show_graph(G, text, colors = []):
         hoverinfo='text',
         marker=dict(
             showscale=True,
-            # colorscale options
-            #'Greys' | 'YlGnBu' | 'Greens' | 'YlOrRd' | 'Bluered' | 'RdBu' |
-            #'Reds' | 'Blues' | 'Picnic' | 'Rainbow' | 'Portland' | 'Jet' |
-            #'Hot' | 'Blackbody' | 'Earth' | 'Electric' | 'Viridis' |
             colorscale='YlGnBu',
             reversescale=True,
             color=colors,
@@ -130,7 +131,7 @@ def show_graph(G, text, colors = []):
         node_trace.marker.color = node_adjacencies
 
     node_trace.text = node_text
-    fig = go.Figure(data=[edge_trace, node_trace],
+    fig = go.Figure(data=[edge_trace, edge_trace1, node_trace],
                     layout=go.Layout(
                 title='<b>'+text+'</b>',
                     titlefont_size=16,
@@ -224,7 +225,7 @@ def menu(G):
 
             node_colors = ["blue" if n in path else "red" for n in G.nodes()]
             title = 'Menor caminho entre ' + G.nodes[id1]['name'] + ' e ' + G.nodes[id2]['name']
-            show_graph(G, title , node_colors)
+            show_graph(G, title , node_colors, path)
         else:
             input('Username not found. Press ENTER to return.')
 
